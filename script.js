@@ -8,7 +8,7 @@ $(document).ready(function() {
 
 	var rendered = '';
 
-	// var cursor = 0; // not yet implemented
+	var cursor = 0;
 
 	var types = {
 		strong: { regex: /\*[^\s][^\*]*[^\s]\*/g, before: '<strong>', after: '</strong>' },
@@ -32,36 +32,42 @@ $(document).ready(function() {
 	update();
 
 	function input(e) {
-		var character = keyevent(e);
-		switch(character)
+		var char = e.charCode ? String.fromCharCode(e.charCode) : undefined;
+		if(e.keyCode)
 		{
-		case undefined:
-			return;
-		case 'backspace':
-			plain = plain.substring(0, plain.length - 1);
-			break;
-		case 'enter':
-			plain += '\n';
-			break;
-		default:
-			plain += character;
-		}
-	}
-
-	function keyevent(e) {
-		if(e.charCode)
-			return String.fromCharCode(e.charCode);
-		else if(e.keyCode)
+			console.log(e.keyCode);
 			switch(e.keyCode)
 			{
-			case 13:
-				return 'enter';
-			case 8:
-				return 'backspace';
+			case  8: // backspace
+				if(cursor > 0) {
+					plain = plain.substring(0, cursor - 1) + plain.substring(cursor);
+					cursor--;
+				}
+				break;
+			case 13: // enter
+				char = '\n';
+				break;
+			case 37: // left
+				if(cursor > 0) cursor--;
+				break;
+			case 39: // right
+				if(cursor < plain.length - 1) cursor++;
+				break;
+			case 46: // delete
+				if(cursor < plain.length)
+					plain = plain.substring(0, cursor) + plain.substring(cursor + 1);
+				break;
 			default:
-				return undefined;
+				return;
 			}
-		else return undefined;
+		}
+		if(char)
+		{
+			var array = plain.split('');
+			array.splice(cursor, 0, char);
+			plain = array.join('');
+			cursor++;
+		}
 	}
 
 	function fetch() {
@@ -112,7 +118,7 @@ $(document).ready(function() {
 	}
 
 	function output() {
-		$('#sheet').html(rendered == '' ? '...' : rendered);
+		$('#sheet').html(rendered == '' ? '<gray>...</gray>' : rendered);
 	}
 
 });
