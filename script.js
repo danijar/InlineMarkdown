@@ -1,15 +1,20 @@
 $(document).ready(function() {
 
-	plain = '';
-	features = [/* { type:'strong', from:3, to:7 } */];
-	list = [/* plain:'a', string:'<strong>a' */];
-	rendered = '';
+	var plain = '';
+	var features = [];
 
-	types = {
-		strong: { regex: /\*[^\s][^\*]+[^\s]\*/g, before: '<strong>', after: '</strong>' },
-		h1: { regex: /\n\#{1}[^\#\n]*\n/g, before: '<h1>', after: '</h1>' },
-		h2: { regex: /\n\#{2}[^\#\n]*\n/g, before: '<h2>', after: '</h2>' },
-		h3: { regex: /\n\#{3}[^\#\n]*\n/g, before: '<h3>', after: '</h3>' },
+	var list = '';
+	var indices = [];
+
+	var rendered = '';
+
+	// var cursor = 0; // not yet implemented
+
+	var types = {
+		strong: { regex: /\*[^\s][^\*]*[^\s]\*/g, before: '<strong>', after: '</strong>' },
+		h1:     { regex: /\n\#{1}[^\#\n]*\n/g,    before: '<h1>',     after: '</h1>'     },
+		h2:     { regex: /\n\#{2}[^\#\n]*\n/g,    before: '<h2>',     after: '</h2>'     },
+		h3:     { regex: /\n\#{3}[^\#\n]*\n/g,    before: '<h3>',     after: '</h3>'     },
 	};
 
 	$(document).keypress(function(e) {
@@ -71,25 +76,37 @@ $(document).ready(function() {
 	}
 
 	function format() {
-		list = $.map(plain.split(''), function(character) {
-			return { plain: character, string: character };
-		});
+		list = plain;
+		indices  = _.range(0, list.length);
 
-		$.each(features, function(index, feature) {
-			if(types[feature.type])
-			{
-				list[feature.from].string = types[feature.type].before + list[feature.from].plain;
-				list[feature.to].string = list[feature.to].plain + types[feature.type].after;
+		_.each(features, function(feature) {
+			if(feature.type in types) {
+				var type = types[feature.type];
+				insert(feature.from, type.before);
+				insert(feature.to + 1, type.after);
 			}
 		});
+	}
+
+	function insert(position, string)
+	{
+		var index;
+		for(var i = 0; i < indices.length; ++i)
+			if(indices[i] == position)
+				index = i;
+
+		var start = list.length;
+		var end = start + string.length;
+		list += string;
+
+		indices.splice.apply(indices, [index, 0].concat(_.range(start, end)));
 	}
 
 	function render() {
 		rendered = '';
 
-		$.each(list, function(index, element) {
-			rendered += element.string;
-		});
+		for(var i = 0; i < indices.length; ++i)
+			rendered += list[indices[i]];
 
 		rendered = rendered.replace(/\n/g, '<br>');
 	}
