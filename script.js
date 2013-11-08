@@ -1,12 +1,27 @@
-$(document).ready(function(){
+$(document).ready(function() {
 
-	plain = '', formatted = '';
-	features = [];
-	
-	$(document).keypress(function(e){
+	plain = '';
+	features = [/* { type:'strong', from:3, to:7 } */];
+	list = [/* plain:'a', string:'<strong>a' */];
+	rendered = '';
 
-		var char;
-		switch(char = input(e))
+	$(document).keypress(function(e) {
+		input(e);
+		update();
+	});
+
+	function update() {
+		fetch();
+		format();
+		render();
+		output();
+	}
+
+	update();
+
+	function input(e) {
+		var character = keyevent(e);
+		switch(character)
 		{
 		case undefined:
 			return;
@@ -17,23 +32,17 @@ $(document).ready(function(){
 			plain += '<br>';
 			break;
 		default:
-			plain += char;	
+			plain += character;
 		}
-		
+	}
 
-		look();
-		format();
-
-		output();
-	});
-
-	function input(e)
-	{
+	function keyevent(e) {
 		var pressed;
 		if(e.charCode)
 			return String.fromCharCode(e.charCode);
 		else if(e.keyCode)
-			switch(e.keyCode) {
+			switch(e.keyCode)
+			{
 			case 13:
 				return 'enter';
 			case 8:
@@ -44,35 +53,47 @@ $(document).ready(function(){
 		else return undefined;
 	}
 
-	function look()
-	{
+	function fetch() {
+		// reset
 		features = [];
 
 		// strong
 		var regex = /\*[^\s][^\*]+[^\s]\*/g;
 		var i;
 		while(i = regex.exec(plain))
-			features.push({ type: 'strong', from: i.index, to: i.index + i[0].length });
-
+			features.push({ type: 'strong', from: i.index, to: i.index + i[0].length - 1 });
 	}
 
-	function format()
-	{
-		formatted = plain;
+	function format() {
+		// reset
+		list = $.map(plain.split(''), function(character) {
+			return { plain: character, string: character };
+		});
+
+		$.each(features, function(index, feature) {
+			// strong
+			switch(feature.type)
+			{
+			case 'strong':
+				list[feature.from].string = '<strong>' + list[feature.from].plain;
+				list[feature.to].string = list[feature.to].plain + '</strong>';
+				break;
+			}
+		});
+	}
+
+	function render() {
+		// reset
+		rendered = '';
 
 		// to that in parallel to not skrew up indices!
-		for(var i = 0; i < features.length; ++i)
-			if(features[i].type == 'strong')
-				formatted = formatted.substring(0, features[i].from)
-				          + '<strong>'
-				          + plain.substring(features[i].from, features[i].to)
-				          + '</strong>'
-				          + formatted.substring(features[i].to);		
+		$.each(list, function(index, element) {
+			rendered += element.string;
+		});
 	}
 
-	function output()
-	{
-		$('#sheet').html(formatted);
+	function output() {
+		$('#sheet').html(rendered);
 	}
 
 });
