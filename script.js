@@ -14,6 +14,7 @@ $(document).ready(function() {
 		fetch();
 		format();
 		render();
+		console.log(rendered);
 		output();
 	}
 
@@ -29,7 +30,8 @@ $(document).ready(function() {
 			plain = plain.substring(0, plain.length - 1);
 			break;
 		case 'enter':
-			plain += '<br>';
+			plain += '\n';
+			//plain += '<br>';
 			break;
 		default:
 			plain += character;
@@ -62,6 +64,12 @@ $(document).ready(function() {
 		var i;
 		while(i = regex.exec(plain))
 			features.push({ type: 'strong', from: i.index, to: i.index + i[0].length - 1 });
+
+		// headline
+		var regex = /\#\s.+\n/g;
+		var i;
+		while(i = regex.exec(plain))
+			features.push({ type: 'headline', from: i.index, to: i.index + i[0].length - 1 });
 	}
 
 	function format() {
@@ -78,6 +86,10 @@ $(document).ready(function() {
 				list[feature.from].string = '<strong>' + list[feature.from].plain;
 				list[feature.to].string = list[feature.to].plain + '</strong>';
 				break;
+			case 'headline':
+				list[feature.from].string = '<h1>' + list[feature.from].plain;
+				list[feature.to].string = list[feature.to].plain + '</h1>';
+				break;
 			}
 		});
 	}
@@ -86,14 +98,15 @@ $(document).ready(function() {
 		// reset
 		rendered = '';
 
-		// to that in parallel to not skrew up indices!
 		$.each(list, function(index, element) {
 			rendered += element.string;
 		});
+
+		rendered = rendered.replace(/\n/g, '<br>');
 	}
 
 	function output() {
-		$('#sheet').html(rendered);
+		$('#sheet').html(rendered == '' ? '...' : rendered);
 	}
 
 });
