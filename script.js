@@ -11,13 +11,14 @@ $(document).ready(function() {
 	var cursor = 0;
 
 	var types = {
-		strong: { regex: /\*[^\*\s]([^\*]|(\*\s))*[^\*\s]\*/g, before: '<strong>', after: '</strong>' },
-		h1:     { regex: /^ *#{1}(.*)$/mg,                     before: '<h1>',     after: '</h1>'     },
-		h2:     { regex: /^ *#{2}(.*)$/mg,                     before: '<h2>',     after: '</h2>'     },
-		h3:     { regex: /^ *#{3}(.*)$/mg,                     before: '<h3>',     after: '</h3>'     },
-		h4:     { regex: /^ *#{4}(.*)$/mg,                     before: '<h4>',     after: '</h4>'     },
-		h5:     { regex: /^ *#{5}(.*)$/mg,                     before: '<h5>',     after: '</h5>'     },
-		h6:     { regex: /^ *#{6}(.*)$/mg,                     before: '<h6>',     after: '</h6>'     },
+		bold:   { regex: /\*\*[^\*\s]([^\*]|(\*\s))*[^\*\s]\*\*/g, callback: function(match){ return '<b>' + match + '</b>' } },
+		italic: { regex: /\*[^\*\s]([^\*]|(\*\s))*[^\*\s]\*/g,     callback: function(match){ return '<i>' + match + '</i>' } },
+		h1: { regex: /^#{1}([^#]|$).*$/mg, callback: function(match){ return '<h1>' + match + '</h1>' } },
+		h2: { regex: /^#{2}([^#]|$).*$/mg, callback: function(match){ return '<h2>' + match + '</h2>' } },
+		h3: { regex: /^#{3}([^#]|$).*$/mg, callback: function(match){ return '<h3>' + match + '</h3>' } },
+		h4: { regex: /^#{4}([^#]|$).*$/mg, callback: function(match){ return '<h4>' + match + '</h4>' } },
+		h5: { regex: /^#{5}([^#]|$).*$/mg, callback: function(match){ return '<h5>' + match + '</h5>' } },
+		h6: { regex: /^#{6}([^#]|$).*$/mg, callback: function(match){ return '<h6>' + match + '</h6>' } },
 	};
 
 	$(document).keypress(function(e) {
@@ -26,6 +27,7 @@ $(document).ready(function() {
 	});
 
 	function update() {
+		console.clear();
 		fetch();
 		format();
 		render();
@@ -38,7 +40,7 @@ $(document).ready(function() {
 		var char = e.charCode ? String.fromCharCode(e.charCode) : undefined;
 		if(e.keyCode)
 		{
-			console.log(e.keyCode);
+			//console.log(e.keyCode);
 			switch(e.keyCode)
 			{
 			case  8: // backspace
@@ -78,9 +80,13 @@ $(document).ready(function() {
 
 		$.each(types, function(name, type){
 			var regex = type.regex;
-			var i;
+			var i, n = 0;
 			while(i = regex.exec(plain))
+			{
 				features.push({ type: name, from: i.index, to: i.index + i[0].length - 1 });
+				n++;
+			}
+			//if(n) console.log(n + ' ' + name)
 		});
 	}
 
@@ -91,24 +97,33 @@ $(document).ready(function() {
 		_.each(features, function(feature) {
 			if(feature.type in types) {
 				var type = types[feature.type];
-				insert(feature.from, type.before);
-				insert(feature.to + 1, type.after);
+				var string = plain.substring(feature.from, feature.to + 1);
+				replace(feature.from, feature.to, type.callback(string));
 			}
 		});
+
+		//console.log(list);
+		//console.log(indices);
 	}
 
-	function insert(position, string)
+	function replace(plain_from, plain_to, string)
 	{
-		var index;
+		var from, to;
 		for(var i = 0; i < indices.length; ++i)
-			if(indices[i] == position)
-				index = i;
+			if(indices[i] == plain_from)
+				from = i;
+			else if(indices[i] == plain_to)
+				to = i;
 
+		if(from === undefined) { console.log("cannot replace"); return; }
+		if(to   === undefined) to = indices.length;
+		
 		var start = list.length;
 		var end = start + string.length;
 		list += string;
 
-		indices.splice.apply(indices, [index, 0].concat(_.range(start, end)));
+		var spliced = indices.splice.apply(indices, [from, to - from + 1].concat(_.range(start, end)));
+		//console.log("from " + from + " to " + to + " spliced " + spliced);
 	}
 
 	function render() {
