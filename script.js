@@ -11,10 +11,13 @@ $(document).ready(function() {
 	var cursor = 0;
 
 	var types = {
-		strong: { regex: /\*[^\s][^\*]*[^\s]\*/g, before: '<strong>', after: '</strong>' },
-		h1:     { regex: /\n\#{1}[^\#\n]*\n/g,    before: '<h1>',     after: '</h1>'     },
-		h2:     { regex: /\n\#{2}[^\#\n]*\n/g,    before: '<h2>',     after: '</h2>'     },
-		h3:     { regex: /\n\#{3}[^\#\n]*\n/g,    before: '<h3>',     after: '</h3>'     },
+		strong: { regex: /\*[^\*\s]([^\*]|(\*\s))*[^\*\s]\*/g, before: '<strong>', after: '</strong>' },
+		h1:     { regex: /^ *#{1}(.*)$/mg,                     before: '<h1>',     after: '</h1>'     },
+		h2:     { regex: /^ *#{2}(.*)$/mg,                     before: '<h2>',     after: '</h2>'     },
+		h3:     { regex: /^ *#{3}(.*)$/mg,                     before: '<h3>',     after: '</h3>'     },
+		h4:     { regex: /^ *#{4}(.*)$/mg,                     before: '<h4>',     after: '</h4>'     },
+		h5:     { regex: /^ *#{5}(.*)$/mg,                     before: '<h5>',     after: '</h5>'     },
+		h6:     { regex: /^ *#{6}(.*)$/mg,                     before: '<h6>',     after: '</h6>'     },
 	};
 
 	$(document).keypress(function(e) {
