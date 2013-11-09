@@ -24,6 +24,7 @@ $(document).ready(function() {
 	$(document).keypress(function(e) {
 		input(e);
 		update();
+		blink();
 	});
 
 	function update() {
@@ -56,7 +57,7 @@ $(document).ready(function() {
 				if(cursor > 0) cursor--;
 				break;
 			case 39: // right
-				if(cursor < plain.length - 1) cursor++;
+				if(cursor < plain.length) cursor++;
 				break;
 			case 46: // delete
 				if(cursor < plain.length)
@@ -86,6 +87,7 @@ $(document).ready(function() {
 				features.push({ type: name, from: i.index, to: i.index + i[0].length - 1 });
 				n++;
 			}
+
 			//if(n) console.log(n + ' ' + name)
 		});
 	}
@@ -123,6 +125,7 @@ $(document).ready(function() {
 		list += string;
 
 		var spliced = indices.splice.apply(indices, [from, to - from + 1].concat(_.range(start, end)));
+
 		//console.log("from " + from + " to " + to + " spliced " + spliced);
 	}
 
@@ -133,10 +136,33 @@ $(document).ready(function() {
 			rendered += list[indices[i]];
 
 		rendered = rendered.replace(/\n/g, '<br>');
+		rendered = rendered.replace(' ', '&nbsp;');
 	}
 
 	function output() {
-		$('#sheet').html(rendered == '' ? '<gray>...</gray>' : rendered);
+		$('.sheet.real').html(rendered == '' ? '<gray>...</gray>' : rendered);
+	}
+
+	function blink()
+	{
+		var streak = $('.sheet + .fake + .cursor');
+
+		if(!rendered)
+		{
+			streak.hide();
+			return;
+		}
+
+		console.log(cursor);
+		console.log(rendered.substring(0, cursor));
+		
+		var fake = $('.sheet.fake');
+		fake.hide().show();
+		fake.html(rendered.substring(0, cursor));
+		var height = fake.outerHeight(), width = fake.outerWidth();
+
+		var top = height - streak.outerHeight(), left = width;
+		streak.show().css({ 'top': top + 'px', 'left': left + 'px' });
 	}
 
 });
