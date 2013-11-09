@@ -24,7 +24,6 @@ $(document).ready(function() {
 	$(document).keypress(function(e) {
 		input(e);
 		update();
-		blink();
 	});
 
 	function update() {
@@ -33,6 +32,7 @@ $(document).ready(function() {
 		format();
 		render();
 		output();
+		blink();
 	}
 
 	update();
@@ -108,8 +108,7 @@ $(document).ready(function() {
 		//console.log(indices);
 	}
 
-	function replace(plain_from, plain_to, string)
-	{
+	function replace(plain_from, plain_to, string) {
 		var from, to;
 		for(var i = 0; i < indices.length; ++i)
 			if(indices[i] == plain_from)
@@ -130,13 +129,29 @@ $(document).ready(function() {
 	}
 
 	function render() {
-		rendered = '';
-
+		
+		var index, curpos;
 		for(var i = 0; i < indices.length; ++i)
+			if(indices[i] == cursor)
+				index = i;
+
+		rendered = '';
+		for(var i = 0; i < indices.length; ++i) {
+			if(index == i)
+				curpos = rendered.length;
 			rendered += list[indices[i]];
+		}
+
+		if(curpos === undefined) {console.log("cursor not found"); curpos = rendered.length; }
+		rendered = insert(rendered, curpos, '<span class="curpos" at="' + cursor + '"></span>');
 
 		rendered = rendered.replace(/\n/g, '<br>');
-		rendered = rendered.replace(' ', '&nbsp;');
+		//rendered = rendered.replace(' ', '&nbsp;'); // only multiple whitespaces and outside of tags
+	}
+
+	function insert(into, at, string)
+	{
+		return into.substring(0, at) + string + into.substring(at);
 	}
 
 	function output() {
@@ -145,23 +160,12 @@ $(document).ready(function() {
 
 	function blink()
 	{
-		var streak = $('.sheet + .fake + .cursor');
+		var streak = $('.cursor');
+		if(rendered == '') {streak.hide(); return; }
 
-		if(!rendered)
-		{
-			streak.hide();
-			return;
-		}
+		var offset = $('.curpos').offset();
+		var top = offset.top - streak.outerHeight() * 0.8, left = offset.left;
 
-		console.log(cursor);
-		console.log(rendered.substring(0, cursor));
-		
-		var fake = $('.sheet.fake');
-		fake.hide().show();
-		fake.html(rendered.substring(0, cursor));
-		var height = fake.outerHeight(), width = fake.outerWidth();
-
-		var top = height - streak.outerHeight(), left = width;
 		streak.show().css({ 'top': top + 'px', 'left': left + 'px' });
 	}
 

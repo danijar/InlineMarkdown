@@ -1,8 +1,7 @@
 body{ font-size:10px; }
-.sheet{ position:fixed; top:0; left:0; -moz-box-sizing:border-box; -webkit-box-sizing:border-box; box-sizing:border-box; border:none; padding:1em; }
-.sheet{ font-size:1.5em; color:#444; line-height:1.2em; min-height:1.2em; font-family:'Consolas'; }
-.sheet.real{ height:100%; width:100%; z-index:0; }
-.sheet.fake{ height:auto; width:auto; padding-right:0; padding-bottom:0; visibility:hidden; z-index:-1; }
+.sheet{ position:fixed; top:0; left:0; height:100%; width:100%; -moz-box-sizing:border-box; -webkit-box-sizing:border-box; box-sizing:border-box; border:none; padding:1em; z-index:0; }
+.sheet{ font-size:1.5em; color:#444; font-family:'Consolas'; }
+.curpos{ display:inline-block; }
 .cursor{ position:fixed; top:0; left:0; height:2em; width:2px; background:#ccc; z-index:1; }
 
 gray{ color:#ccc; }
