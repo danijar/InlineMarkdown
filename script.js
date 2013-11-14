@@ -11,8 +11,9 @@ $(document).ready(function() {
 	var cursor = 0;
 
 	var types = {
-		bold:   { regex: /\*\*[^\*\s]([^\*]|(\*\s))*[^\*\s]\*\*/g, before: '<b>', after: '</b>' },
-		italic: { regex: /\*[^\*\s]([^\*]|(\*\s))*[^\*\s]\*/g, before: '<i>', after: '</i>' },
+		italic:     { regex: /\*[^\*\s]([^\*]|(\*\s))*[^\*\s]\*(?!\*)/g, before: '<i>', after: '</i>' },
+		bold:       { regex: /\*\*[^\*\s]([^\*]|(\*\s))*[^\*\s]\*\*/g, before: '<b>', after: '</b>' },
+		italicbold: { regex: /\*\*\*[^\*\s]([^\*]|(\*\s))*[^\*\s]\*\*\*/g, before: '<b><i>', after: '</i></b>' },
 		h1: { regex: /^#{1}([^#]|$).*$/mg, before: '<h1>', after: '</h1>' },
 		h2: { regex: /^#{2}([^#]|$).*$/mg, before: '<h2>', after: '</h2>' },
 		h3: { regex: /^#{3}([^#]|$).*$/mg, before: '<h3>', after: '</h3>' },
