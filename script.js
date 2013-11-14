@@ -185,9 +185,12 @@ $(document).ready(function() {
 		if(rendered == '') {streak.hide(); return; }
 
 		var offset = $('.curpos').offset();
-		var top = offset.top - streak.outerHeight() * 0.8, left = offset.left;
+		var size = parseInt($('.curpos').css('font-size'));
+		
+		var top = offset.top - 0.9 * size, left = offset.left;
+		var height = size, width = 0.1 * size;
 
-		streak.show().css({ 'top': top + 'px', 'left': left + 'px' });
+		streak.show().css({ 'top': top + 'px', 'left': left + 'px', height: height, width: width });
 	}
 
 	function prepare() {
