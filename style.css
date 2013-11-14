@@ -1,6 +1,6 @@
 body{ font-size:10px; }
 .sheet{ position:fixed; top:0; left:0; height:100%; width:100%; -moz-box-sizing:border-box; -webkit-box-sizing:border-box; box-sizing:border-box; border:none; padding:1em; z-index:0; }
-.sheet{ font-size:1.5em; color:#444; font-family:'Consolas'; }
+.sheet{ font-size:1.5em; color:#444; font-family:'Consolas',monospace; }
 .curpos{ display:inline-block; }
 .cursor{ position:fixed; top:0; left:0; height:2em; width:2px; background:#ccc; z-index:1; }
 

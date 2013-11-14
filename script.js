@@ -32,6 +32,7 @@ $(document).ready(function() {
 		format();
 		render();
 		cursor_insert();
+		prepare();
 		output();
 		cursor_display();
 	}
@@ -150,13 +151,9 @@ $(document).ready(function() {
 	}
 
 	function render() {
-		
 		rendered = '';
 		for(var i = 0; i < indices.length; ++i)
 			rendered += list[indices[i]];
-
-		rendered = rendered.replace(/\n/g, '<br>');
-		//rendered = rendered.replace(' ', '&nbsp;'); // only multiple whitespaces and outside of tags
 	}
 
 	function cursor_insert()
@@ -190,6 +187,11 @@ $(document).ready(function() {
 		var top = offset.top - streak.outerHeight() * 0.8, left = offset.left;
 
 		streak.show().css({ 'top': top + 'px', 'left': left + 'px' });
+	}
+
+	function prepare() {
+		rendered = rendered.replace(/\n/g, '<br>');
+		//rendered = rendered.replace(' ', '&nbsp;'); // only multiple whitespaces and outside of tags
 	}
 
 	function output() {
